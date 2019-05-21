@@ -10,25 +10,24 @@ spec:
     params:
       - name: pathToDockerFile
         description: The path to the dockerfile to build
-        default: /workspace/docker-source/Dockerfile
+        default: /workspace/examples/helloworld/Dockerfile
       - name: pathToContext
         description:
           The build context used by Kaniko
-          (https://github.com/GoogleContainerTools/kaniko#kaniko-build-contexts)
-        default: /workspace/docker-source
+        default: /workspace/examples/helloworld
   outputs:
     resources:
       - name: builtImage
         type: image
   steps:
     - name: build-and-push
-      image: gcr.io/kaniko-project/executor
+      image: gcr.io/kaniko-project/executor:v0.9.0
       # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
-      env:
-        - name: "DOCKER_CONFIG"
-          value: "/builder/home/.docker/"
-      command:
-        - /kaniko/executor
+      #env:
+      #  - name: "DOCKER_CONFIG"
+      #    value: "/builder/home/.docker/"
+      #command:
+      #  - /kaniko/executor
       args:
         - --dockerfile=${inputs.params.pathToDockerFile}
         - --destination=${outputs.resources.builtImage.url}

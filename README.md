@@ -13,9 +13,11 @@ kubectl create secret docker-registry knative-build-auth \
   --docker-username=$DOCKER_USER \
   --docker-password=$DOCKER_PASSWORD \
   --docker-email=$DOCKER_EMAIL
+
+kubectl apply -f buildyaml/serviceaccount.yaml
 ```
 
-## Build the source code of the application Hello World
+## Build the source code of the application Hello World with Knative build
 
 Open a terminal, and go to the home directory of this project. 
 
@@ -33,3 +35,30 @@ kubectl apply -f buildyaml/helloworld_service.yaml
 
 Each time, there is any change to the source of the Hello World application. Run the above commands to build the image, and
 redeploy the service in the Kubernetes cluster, empowered by Knative capability.
+
+## Build the source code of the application Hello World with Tekton pipeline
+
+Run the following command to build and image and launch the service:
+
+```shell
+kubectl apply -f buildyaml/task.yaml
+kubectl apply -f buildyaml/resources.yaml
+```
+
+You can go with the task run:
+
+```shell
+kubectl delete -f buildyaml/taskrun.yaml
+kubectl apply -f buildyaml/taskrun.yaml
+```
+
+Or you can go with the pipeline run:
+
+```shell
+kubectl delete -f buildyaml/pipelinerun.yaml
+kubectl apply -f buildyaml/pipeline.yaml
+```
+
+```shell
+kubectl apply -f buildyaml/pipelinerun.yaml
+```
