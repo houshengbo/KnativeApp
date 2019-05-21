@@ -4,9 +4,10 @@
 FROM golang:1.12 as builder
 
 # Copy local code to the container image.
-WORKDIR /go/src/github.com/knative/docs/helloworld
+WORKDIR /go/src/github.com/houshengbo/KnativeApp/examples/helloworld
 COPY . .
 
+RUN ls
 # Build the command inside the container.
 # (You may fetch or manage dependencies here,
 # either manually or with a tool like "godep".)
@@ -18,7 +19,7 @@ FROM alpine
 RUN apk add --no-cache ca-certificates
 
 # Copy the binary to the production image from the builder stage.
-COPY --from=builder /go/src/github.com/knative/docs/helloworld/helloworld /helloworld
+COPY --from=builder /go/src/github.com/houshengbo/KnativeApp/examples/helloworld/helloworld /helloworld
 
 # Run the web service on container startup.
 CMD ["/helloworld"]
