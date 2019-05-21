@@ -36,18 +36,25 @@ spec:
             git:
               url: https://github.com/houshengbo/KnativeApp.git
               revision: master
-          steps:
-            - name: build-and-push
-              image: gcr.io/kaniko-project/executor:v0.9.0
-              args:
-                - --dockerfile=/workspace/examples/helloworld/Dockerfile
-                - --context=/workspace/examples/helloworld/
-                - --destination=docker.io/houshengbo/helloworld:latest
+          #steps:
+          #  - name: build-and-push
+           #   image: gcr.io/kaniko-project/executor:v0.9.0
+          #    args:
+           #     - --dockerfile=/workspace/examples/helloworld/Dockerfile
+           #     - --context=/workspace/examples/helloworld/
+           #     - --destination="$(IMAGE_TAG)"
+          template:
+            name: kaniko
+            arguments:
+              - name: IMAGE
+                value: ${IMAGE}
+              - name: DOCKERFILE
+                value: /workspace/examples/helloworld/Dockerfile
           timeout: 10m
       revisionTemplate:
         spec:
           container:
-            image: docker.io/houshengbo/helloworld:latest
+            image: docker.io/houshengbo/helloworld-go:latest
             env:
               - name: TARGET
                 value: "Knative 2"
