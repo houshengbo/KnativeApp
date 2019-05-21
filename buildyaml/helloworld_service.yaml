@@ -12,18 +12,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: knative-build
+secrets:
+  - name: knative-build-auth
+---
 apiVersion: serving.knative.dev/v1alpha1
 kind: Service
 metadata:
-  name: helloworld # The name of the app
-  namespace: default # The namespace the app will use
+  name: helloworld-go
+  namespace: default
 spec:
   runLatest:
     configuration:
+      build:
+        apiVersion: build.knative.dev/v1alpha1
+        kind: Build
+        spec:
+          serviceAccountName: knative-build
+          source:
+            git:
+              url: https://github.com/houshengbo/KnativeApp.git
+              revision: master
+          steps:
+            - name: build-and-push
+              image: gcr.io/kaniko-project/executor:v0.9.0
+              args:
+                - --dockerfile=/workspace/examples/helloworld/Dockerfile
+                - --context=/workspace/examples/helloworld/
+                - --destination=docker.io/houshengbo/helloworld:latest
+          timeout: 10m
       revisionTemplate:
         spec:
           container:
             image: docker.io/houshengbo/helloworld:latest
             env:
               - name: TARGET
-                value: "Knative"
+                value: "Knative 2"
