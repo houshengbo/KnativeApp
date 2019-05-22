@@ -2,24 +2,66 @@ apiVersion: tekton.dev/v1alpha1
 kind: TaskRun
 metadata:
   name: build-docker-image-from-git-source-task-run
+#spec:
+#  serviceAccount: knative-build
+#  taskRef:
+#    name: build-docker-image-from-git-source
+#  inputs:
+#    resources:
+#      - name: docker-source
+#        resourceRef:
+#          name: skaffold-git
+#    params:
+#      - name: pathToDockerFile
+#        value: /workspace/docker-source/examples/helloworld/Dockerfile
+#        #value: /workspace/examples/microservices/leeroy-web/Dockerfile
+#      - name: pathToContext
+#        value: /workspace/docker-source/examples/helloworld
+#        #value: /workspace/examples/microservices/leeroy-web
+#  taskRef:
+#      name: build-docker-image-from-git-source
+#    inputs:
+#      resources:
+#        - name: docker-source
+#          resourceRef:
+#            name: skaffold-git
+#      params:
+#        - name: pathToDockerFile
+#          value: /workspace/docker-source/examples/helloworld/Dockerfile
+#          #value: /workspace/examples/microservices/leeroy-web/Dockerfile
+#        - name: pathToContext
+#          value: /workspace/docker-source/examples/helloworld
+#          #value: /workspace/examples/microservices/leeroy-web
+#  outputs:
+#    resources:
+#      - name: builtImage
+#        resourceRef:
+#          name: skaffold-image-leeroy-web
+
 spec:
   serviceAccount: knative-build
   taskRef:
-    name: build-docker-image-from-git-source
+    name: kaniko
   inputs:
     resources:
-      - name: docker-source
-        resourceRef:
-          name: skaffold-git
+      - name: source
+        resourceSpec:
+          type: git
+          params:
+            - name: url
+              value: https://github.com/houshengbo/KnativeApp
     params:
-      - name: pathToDockerFile
-        value: /workspace/docker-source/examples/helloworld/Dockerfile
-        #value: /workspace/examples/microservices/leeroy-web/Dockerfile
-      - name: pathToContext
-        value: /workspace/docker-source/examples/helloworld
-        #value: /workspace/examples/microservices/leeroy-web
+      - name: DOCKERFILE
+        value: Dockerfile
+      - name: CONTEXT
+        value: ./examples/helloworld
   outputs:
     resources:
-      - name: builtImage
+      - name: image
         resourceRef:
           name: skaffold-image-leeroy-web
+#        resourceSpec:
+#          type: image
+#          params:
+#            - name: url
+#              value: gcr.io/my-repo/my-image

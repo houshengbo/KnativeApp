@@ -15,6 +15,7 @@ kubectl create secret docker-registry knative-build-auth \
   --docker-email=$DOCKER_EMAIL
 
 kubectl apply -f buildyaml/serviceaccount.yaml
+kubectl apply -f buildyaml/clusterrole.yaml
 ```
 
 ## Build the source code of the application Hello World with Knative build
@@ -57,8 +58,4 @@ Or you can go with the pipeline run:
 ```shell
 kubectl delete -f buildyaml/pipelinerun.yaml
 kubectl apply -f buildyaml/pipeline.yaml
-```
-
-```shell
-kubectl apply -f buildyaml/pipelinerun.yaml
 ```

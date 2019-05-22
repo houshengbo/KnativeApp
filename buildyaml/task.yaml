@@ -22,13 +22,44 @@ spec:
   steps:
     - name: build-and-push
       image: gcr.io/kaniko-project/executor:v0.9.0
-      # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
-      #env:
-      #  - name: "DOCKER_CONFIG"
-      #    value: "/builder/home/.docker/"
-      #command:
-      #  - /kaniko/executor
       args:
         - --dockerfile=${inputs.params.pathToDockerFile}
         - --destination=${outputs.resources.builtImage.url}
         - --context=${inputs.params.pathToContext}
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: kaniko
+spec:
+  inputs:
+    params:
+      - name: DOCKERFILE
+        description: Path to the Dockerfile to build.
+        default: ./Dockerfile
+      - name: CONTEXT
+        description: Path to the Dockerfile to build.
+        default: /workspace/source
+    resources:
+      - name: source
+        type: git
+
+  outputs:
+    resources:
+      - name: image
+        type: image
+
+  steps:
+    - name: build-and-push
+      workingdir: /workspace/source
+      image: gcr.io/kaniko-project/executor:v0.9.0
+      # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
+      # https://github.com/tektoncd/pipeline/pull/706
+      env:
+        - name: DOCKER_CONFIG
+          value: /builder/home/.docker
+      command:
+        - /kaniko/executor
+        - --dockerfile=${inputs.params.DOCKERFILE}
+        - --context=/workspace/source/${inputs.params.CONTEXT}
+        - --destination=${outputs.resources.image.url}
