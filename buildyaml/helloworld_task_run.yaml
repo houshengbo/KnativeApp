@@ -23,7 +23,7 @@ spec:
         apiVersion: tekton.dev/v1alpha1
         kind: TaskRun
         spec:
-          serviceAccountName: knative-build
+          serviceAccount: knative-build
           taskRef:
             name: build-docker-image-from-git-source
           inputs:
@@ -33,9 +33,9 @@ spec:
                   name: skaffold-git
             params:
               - name: pathToDockerFile
-                value: /workspace/examples/helloworld/Dockerfile
+                value: /workspace/docker-source/examples/helloworld/Dockerfile
               - name: pathToContext
-                value: /workspace/examples/helloworld
+                value: /workspace/docker-source/examples/helloworld
           outputs:
             resources:
               - name: builtImage
